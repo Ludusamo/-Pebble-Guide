@@ -1,0 +1,19 @@
+{
+  "uuid": "f81ac002-015a-4d2e-9b15-f6dce8056e5b",
+  "shortName": "Pebble-Guide",
+  "longName": "Pebble-Guide",
+  "companyName": "MakeAwesomeHappen",
+  "versionCode": 1,
+  "versionLabel": "1.0",
+  "sdkVersion": "3",
+  "targetPlatforms": ["aplite", "basalt"],
+  "watchapp": {
+    "watchface": false
+  },
+  "appKeys": {
+    "dummy": 0
+  },
+  "resources": {
+    "media": []
+  }
+}
