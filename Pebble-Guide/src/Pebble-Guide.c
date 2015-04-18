@@ -1,4 +1,5 @@
 #include <pebble.h>
+//Joon was here
 
 static Window *window;
 static TextLayer *text_layer;
