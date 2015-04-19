@@ -84,6 +84,7 @@ static void selectHandler(ClickRecognizerRef recognizer, void *context) {
     // Schedule wakeup event and keep the WakeupId
     wakeUp[entries] = wakeup_schedule(future_time, 0, true);
     persist_write_int(entries + 30, wakeUp[entries]);
+    vibes_short_pulse();
     window_stack_pop(false);
     window_stack_pop(true);
   }

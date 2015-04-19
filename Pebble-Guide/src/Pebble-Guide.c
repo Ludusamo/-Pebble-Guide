@@ -217,6 +217,7 @@ void splashWindowUnload(Window *window) {
 }
 
 static void init() {
+  vibes_long_pulse(); 
   splashWindow = window_create();
   window_set_fullscreen(splashWindow, true);
   window_set_background_color(splashWindow, GColorBlack);
