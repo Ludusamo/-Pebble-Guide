@@ -1,12 +1,12 @@
 #include <pebble.h>
+#include "StudyTimeWindowCreator.h"
+#include "Util.h"
 
 #define NUM_MENU_SECTIONS 0
 #define MAX_ENTRIES 10
 
 static Window *window;
 static MenuLayer *times_layer;
-static Window *errorWindow;
-static TextLayer *error;
 
 int numEntries;
 
@@ -32,26 +32,10 @@ static void drawRow(GContext *ctx, const Layer *cellLayer, MenuIndex *cellIndex,
 	} else {
 		char subject[20];
 		persist_read_string(cellIndex->row - 1, subject, sizeof(subject));
-		menu_cell_basic_draw(ctx, cellLayer, subject, "", NULL);
+		int time = persist_read_int(10 + cellIndex->row - 1);
+		
+		menu_cell_basic_draw(ctx, cellLayer, subject, minuteToTime(time), NULL);
 	}
-}
-
-static void createErrorWindow(const char *errorText) {
-	errorWindow = window_create();
-			
-	error = text_layer_create(GRect(0, (168 / 2) - 14, 144, 14)); 
-	text_layer_set_background_color(error, GColorClear);
-	text_layer_set_text_color(error, GColorBlack);
-	text_layer_set_text(error, errorText);
-	text_layer_set_font(error, fonts_get_system_font(FONT_KEY_GOTHIC_14_BOLD));
-	text_layer_set_text_alignment(error, GTextAlignmentCenter);
-	layer_add_child(window_get_root_layer(errorWindow), text_layer_get_layer(error));
-
-	window_stack_push(errorWindow, true);
-}
-
-static void createAddItemWindow() {
-
 }
 
 static void select(MenuLayer *menu, MenuIndex *cellIndex, void *data) {
@@ -60,7 +44,9 @@ static void select(MenuLayer *menu, MenuIndex *cellIndex, void *data) {
 			createErrorWindow("Too Many Entries...");	
 			return;
 		} else {
-			createAddItemWindow();			
+			setEntries(numEntries);
+      numEntries++;
+      createAddItemWindow();
 		}
 	} else {
 
@@ -68,8 +54,6 @@ static void select(MenuLayer *menu, MenuIndex *cellIndex, void *data) {
 }
 
 static void window_load(Window *window) {
-	persist_write_string(0, "TEST1");
-
 	// Check num entries
 	for (int i = 0; i < MAX_ENTRIES; i++) {
 		if (persist_exists(i)) {
