@@ -167,11 +167,54 @@ static void enterApp() {
     .load = main_window_load,
     .unload = main_window_unload,
   });
+  window_stack_pop_all(false);
   window_stack_push(s_main_window, true);
 }
 
+static void keyHandle(ClickRecognizerRef recognizer, void *context) {
+	enterApp();
+}
+
+static void splashClickProvider(void *context) {
+  window_single_click_subscribe(BUTTON_ID_SELECT, keyHandle);
+  window_single_click_subscribe(BUTTON_ID_UP, keyHandle);
+  window_single_click_subscribe(BUTTON_ID_DOWN, keyHandle);
+}
+
+void splashWindowLoad(Window *window) {
+  Layer *window_layer = window_get_root_layer(window);
+  GRect bounds = layer_get_bounds(window_layer);
+
+  splashImage = gbitmap_create_with_resource(RESOURCE_ID_SPLASH_SCREEN);
+
+  bitmapLayer = bitmap_layer_create(bounds);
+  bitmap_layer_set_bitmap(bitmapLayer, splashImage);
+  layer_add_child(window_layer, bitmap_layer_get_layer(bitmapLayer));
+  
+  bitmapText = text_layer_create(GRect(0, 130, 144, 30)); 
+	text_layer_set_background_color(bitmapText, GColorClear);
+	text_layer_set_text_color(bitmapText, GColorWhite);
+	text_layer_set_text(bitmapText, "PRESS");
+	text_layer_set_font(bitmapText, fonts_get_system_font(FONT_KEY_GOTHIC_24_BOLD));
+	text_layer_set_text_alignment(bitmapText, GTextAlignmentCenter);
+	layer_add_child(window_layer, text_layer_get_layer(bitmapText));
+}
+
+void splashWindowUnload(Window *window) {
+  bitmap_layer_destroy(bitmapLayer);
+  gbitmap_destroy(splashImage);
+}
+
 static void init() {
-  enterApp();
+  splashWindow = window_create();
+  window_set_fullscreen(splashWindow, true);
+  window_set_background_color(splashWindow, GColorBlack);
+  window_set_click_config_provider(splashWindow, splashClickProvider);
+  window_set_window_handlers(splashWindow, (WindowHandlers) {
+    .load = splashWindowLoad,
+    .unload = splashWindowUnload,
+  });
+  window_stack_push(splashWindow, true);
 }
 
 static void deinit() {

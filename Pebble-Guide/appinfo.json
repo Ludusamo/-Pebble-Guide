@@ -11,6 +11,12 @@
     "resources": {
         "media": [
             {
+                "file": "images/PebbleGuide_Icon.png",
+                "menuIcon": true,
+                "name": "ICON",
+                "type": "png"
+            },
+            {
                 "file": "images/pebble_splash.png",
                 "name": "SPLASH_SCREEN",
                 "type": "png"
