@@ -5,7 +5,7 @@
 #define NUM_MENU_SECTIONS 0
 #define MAX_ENTRIES 10
 
-static Window *window;
+static Window *studyTimeWindow;
 static MenuLayer *times_layer;
 
 int numEntries;
@@ -49,11 +49,20 @@ static void select(MenuLayer *menu, MenuIndex *cellIndex, void *data) {
       createAddItemWindow();
 		}
 	} else {
-
+    for (int i = cellIndex->row; i < numEntries; i++) {
+      char buffer[20];
+      persist_read_string(i + 1, buffer, sizeof(buffer));
+      persist_write_string(i, buffer);
+      persist_write_int(i + 10, persist_read_int(i + 11));
+      persist_write_int(i + 20, persist_read_int(i + 21));
+      persist_write_int(i + 30, persist_read_int(i + 31));
+    }
+    numEntries--;
+    menu_layer_reload_data(times_layer);
 	}
 }
 
-static void window_load(Window *window) {
+static void unloadStudyTimes(Window *window) {
 	// Check num entries
 	for (int i = 0; i < MAX_ENTRIES; i++) {
 		if (persist_exists(i)) {
@@ -78,22 +87,22 @@ static void window_load(Window *window) {
 	layer_add_child(window_layer, menu_layer_get_layer(times_layer));
 }
 
-static void window_unload(Window *window) {
+static void createStudyTimes(Window *window) {
 	menu_layer_destroy(times_layer);
 	text_layer_destroy(error);
 }
 
 static void init(void) {
-	  window = window_create();
-	  window_set_window_handlers(window, (WindowHandlers) {
-	    .load = window_load,
-	    .unload = window_unload,
+	  studyTimeWindow = window_create();
+	  window_set_window_handlers(studyTimeWindow, (WindowHandlers) {
+	    .load = createStudyTimes,
+	    .unload = unloadStudyTimes,
 	  });
-	  window_stack_push(window, true);
+	  window_stack_push(studyTimeWindow, true);
 }
 
 static void deinit(void) {
-  	window_destroy(window);
+  	window_destroy(studyTimeWindow);
 }
 
 int main(void) {

@@ -15,6 +15,8 @@ int editNum, maxNum, currentEdit;
 int timeForNotification;
 int entries;
 
+static WakeupId wakeUp[10];
+
 static void setEntries(int e) {
   entries = e;
 }
@@ -44,6 +46,21 @@ static void selectHandler(ClickRecognizerRef recognizer, void *context) {
     persist_write_string(entries, "Math");
     persist_write_int(entries + 10, timeForNotification);
     persist_write_int(entries + 20, editNum);
+    
+    int currentTime = 0;
+    time_t curr_time = time(NULL);
+    struct tm *tick_time = localtime(&curr_time);
+    int currentSeconds = (tick_time->tm_hour * 60 + tick_time->tm_min) * 60;
+    
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "%d", timeForNotification * 60);
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "%d", currentSeconds);
+    int sec = timeForNotification * 60 - currentSeconds;
+    APP_LOG(APP_LOG_LEVEL_DEBUG, "%d", sec);
+    time_t future_time = curr_time + sec;
+
+    // Schedule wakeup event and keep the WakeupId
+    wakeUp[entries] = wakeup_schedule(future_time, 0, true);
+    persist_write_int(entries + 30, wakeUp[entries]);
     window_stack_pop(true);
   }
   editNum = 0;
@@ -59,7 +76,6 @@ static void upHandler(ClickRecognizerRef recognizer, void *context) {
 
 static void downHandler(ClickRecognizerRef recognizer, void *context) {
   if(editNum != 0) editNum -= 1;
-  else editNum = maxNum;
   text_layer_set_text(editLayer, twoDigitToString(editNum));
 }
 
@@ -67,6 +83,10 @@ static void click_config_provider(void *context) {
   window_single_click_subscribe(BUTTON_ID_SELECT, selectHandler);
   window_single_click_subscribe(BUTTON_ID_UP, upHandler);
   window_single_click_subscribe(BUTTON_ID_DOWN, downHandler);
+}
+
+static void wakeUpHandler(WakeupId id, int32_t reason) {
+  
 }
 
 static void addItemLoad(Window *window) {
@@ -101,6 +121,7 @@ static void addItemUnload(Window *window) {
 
 static void createAddItemWindow() {
 	addItemWindow = window_create();	
+  wakeup_service_subscribe(wakeUpHandler);
   window_set_click_config_provider(addItemWindow, click_config_provider);
   window_set_window_handlers(addItemWindow, (WindowHandlers) {
 	    .load = addItemLoad,
