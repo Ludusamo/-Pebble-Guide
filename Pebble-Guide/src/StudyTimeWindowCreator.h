@@ -13,8 +13,32 @@ static TextLayer *editLayer;
 int editNum, maxNum, currentEdit;
 int timeForNotification;
 int entries;
+char *subject;
 
 static WakeupId wakeUp[10];
+
+static void setSubject(int subjectNum) {
+  switch (subjectNum) {
+    case 0:
+      subject = "Math";
+      break;
+    case 1:
+      subject = "Spanish";
+      break;
+    case 2:
+      subject = "Chemistry";
+      break;
+    case 3:
+      subject = "History";
+      break;
+    case 4:
+      subject = "English";
+      break;
+    case 5:
+      subject = "Misc.";
+      break;
+  }
+}
 
 static void setEntries(int e) {
   entries = e;
@@ -42,7 +66,7 @@ static void selectHandler(ClickRecognizerRef recognizer, void *context) {
     text_layer_set_text(titleLayer, "Dur");
     timeForNotification += editNum;
   } else {
-    persist_write_string(entries, "Math");
+    persist_write_string(entries, subject);
     persist_write_int(entries + 10, timeForNotification);
     persist_write_int(entries + 20, editNum);
     
@@ -60,6 +84,7 @@ static void selectHandler(ClickRecognizerRef recognizer, void *context) {
     // Schedule wakeup event and keep the WakeupId
     wakeUp[entries] = wakeup_schedule(future_time, 0, true);
     persist_write_int(entries + 30, wakeUp[entries]);
+    window_stack_pop(false);
     window_stack_pop(true);
   }
   editNum = 0;

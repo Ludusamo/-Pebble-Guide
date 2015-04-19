@@ -2,8 +2,10 @@
 #include "FlashcardList.h"
 #include "About.h"
 #include "StudyTimeWindowCreator.h"
+#include "SubjectSelect.h"
+#include "Motivation.h"
 #define NUM_MENU_SECTIONS 1
-#define NUM_FIRST_MENU_ITEMS 3
+#define NUM_FIRST_MENU_ITEMS 4
 #define MAX_ENTRIES 10
 
 static Window *splashWindow;
@@ -57,7 +59,7 @@ static void select(MenuLayer *menu, MenuIndex *cellIndex, void *data) {
 		} else {
 			setEntries(numEntries);
       numEntries++;
-      createAddItemWindow();
+      subjectListInit();
 		}
 	} else {
     for (int i = cellIndex->row; i < numEntries; i++) {
@@ -114,8 +116,11 @@ static void menu_select_callback(int index, void *ctx) {
 	    .unload = unloadStudyTimes,
 	  });
     window_stack_push(studyTimeWindow, true);
+  } 
+  else if (index == 2) {
+    motivation_init();
   }
-  else if(index == 2){
+  else if(index == 3){
     about_init();
   }
   layer_mark_dirty(simple_menu_layer_get_layer(s_simple_menu_layer));
@@ -130,16 +135,22 @@ static void main_window_load(Window *window) {
 
   s_first_menu_items[num_a_items++] = (SimpleMenuItem) {
     .title = "Flashcards",
+    .subtitle = "Study Vocab",
     .callback = menu_select_callback,
   };
   s_first_menu_items[num_a_items++] = (SimpleMenuItem) {
     .title = "Study Times",
-    .subtitle = "",
+    .subtitle = "Schedule Sessions",
+    .callback = menu_select_callback,
+  };
+  s_first_menu_items[num_a_items++] = (SimpleMenuItem) {
+    .title = "Motivation",
+    .subtitle = "Inspiring the Students",
     .callback = menu_select_callback,
   };
   s_first_menu_items[num_a_items++] = (SimpleMenuItem) {
     .title = "About",
-    .subtitle = "",
+    .subtitle = "About the Devs",
     .callback = menu_select_callback,
   };
 

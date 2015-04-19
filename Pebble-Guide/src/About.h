@@ -11,7 +11,7 @@ static void s_about_window_load(Window *window){
   title_layer = text_layer_create(GRect(0, 15, 144, 30)); 
   text_layer_set_text(title_layer, "Pebble Guide");
   text_layer = text_layer_create(GRect(0, 33, 144, 168 - 33)); 
-  text_layer_set_text(text_layer, "This companion app is intended to help students study. Created by Joon Lee and Brendan Horng. Sparkling Water Co");
+  text_layer_set_text(text_layer, "This companion app is intended to help students study.\n\n Created by Joon Lee and Brendan Horng. Sparkling Water Co");
   
   layer_add_child(window_layer, text_layer_get_layer(title_layer));
   layer_add_child(window_layer, text_layer_get_layer(text_layer));
