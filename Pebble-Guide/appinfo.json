@@ -5,11 +5,17 @@
     "capabilities": [
         ""
     ],
-    "companyName": "MakeAwesomeHappen",
+    "companyName": "Sparkling Water Co",
     "longName": "Pebble-Guide",
     "projectType": "native",
     "resources": {
-        "media": []
+        "media": [
+            {
+                "file": "images/pebble_splash.png",
+                "name": "SPLASH_SCREEN",
+                "type": "png"
+            }
+        ]
     },
     "sdkVersion": "3",
     "shortName": "Pebble-Guide",
